@@ -7,15 +7,15 @@ teachers_aide = Flask(__name__)
 def load_login_page():
 	return render_template('Login_page.html', message = "testing")
 
-@teachers_aide.route('/newprofile', methods = ['GET', 'POST'])
+@teachers_aide.route('/newprofile/', methods = ['GET', 'POST'])
 def load_new_profile():
 	return render_template('New_profile.html')
 
-@teachers_aide.route('/testeditor', methods = ['GET', 'POST'])
+@teachers_aide.route('/testeditor/', methods = ['GET', 'POST'])
 def load_test_editor():
 	return render_template('Test_editor.html', current_tests = {})
 
-@teachers_aide.route('/testeditor/new', methods = ['GET', 'POST'])
+@teachers_aide.route('/testeditor/new/', methods = ['GET', 'POST'])
 def load_new_test():
 	return render_template('New_test.html')
 

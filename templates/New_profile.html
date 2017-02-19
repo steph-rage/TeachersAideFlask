@@ -9,7 +9,7 @@
 
 		<h1>Create a new teacher profile</h1>
 
-		<form method='POST' action='profile/editor'>
+		<form method='POST' action="{{ url_for('load_test_editor') }}">
 			Enter your user name: <input type='text' name='new_username' required/>
 			<br>
 			Enter your password: <input type='password' name='new_password' required/>

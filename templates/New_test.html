@@ -12,7 +12,7 @@
 		<p>Give your new test a name and indicate how many answer choices you would like each multiple choice question to have.</p>
 
 
-		<form method="post" action="{{ path }}"> 
+		<form method="post" action="{{ url_for('load_add_questions') }}"> 
 			<input type='text' name='test_name' placeholder='Test name:'/>
 			<br>
 			<input type='number' name='choices' placeholder='Answer choices'/>
