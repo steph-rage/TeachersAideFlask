@@ -9,7 +9,7 @@
 	<h1>Welcome to Teacher's Aide!</h1> 
 	<h2>Please login or create a new user account to continue</h2>
 		<font color='red'>{{ message }}</font> 
-		<form method='POST' action='/profile/editor'>
+		<form method='POST' action='{{ url_for("load_logging_in") }}'>
 			Enter your user name: <textarea name='username' cols='19' rows='1' type='text' contenteditable="true" required>{{ username }}</textarea>
 			<br>
 			Enter your password: <input type='password' name='password'/>

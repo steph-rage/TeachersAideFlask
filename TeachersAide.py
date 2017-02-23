@@ -1,72 +1,63 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, escape, url_for
+
+#from Test_creator import Test
+#from Profile_creator import TeacherProfile
 
 teachers_aide = Flask(__name__)
 
+#Once working, will need to add cookies, and verification at each step.
+#Add in a redirect to login page if no logged in user
+#Need a way of storing profiles - start with json? Or straight use a database
 
 @teachers_aide.route('/', methods = ['GET', 'POST'])
 def load_login_page():
+	if request.method == "POST":
+		return render_template('New_profile.html')
 	return render_template('Login_page.html', message = "testing")
 
 @teachers_aide.route('/newprofile/', methods = ['GET', 'POST'])
 def load_new_profile():
 	return render_template('New_profile.html')
 
-@teachers_aide.route('/testeditor/', methods = ['GET', 'POST'])
-def load_test_editor():
+@teachers_aide.route('/<username>/testeditor/', methods = ['GET', 'POST'])
+def load_test_editor(username):
 	return render_template('Test_editor.html', current_tests = {})
 
-@teachers_aide.route('/testeditor/new/', methods = ['GET', 'POST'])
-def load_new_test():
+@teachers_aide.route('/login', methods = ['GET', 'POST'])
+def load_logging_in():
+	if request.method == 'POST':
+		username = request.form["username"]
+		password = request.form["password"]
+		#check password if returning
+		#create profile if new
+		return redirect(url_for("load_test_editor", username = username))
+
+'''@teachers_aide.route('/<username>/testeditor/new/', methods = ['GET', 'POST'])
+def load_new_test(username):
 	return render_template('New_test.html')
 
-'''@teachers_aide.route('/', methods = ['GET', 'POST'])
-def load_question_detail(self, url_info, user_profile):
-	new_path = url_info[0:-1]
-	new_path = ('/').join(new_path)
-	test_name = parse.unquote_plus(url_info[-2])
-	test = user_profile.tests[test_name]
-	question_number = int(url_info[-1].split('question')[1].split('detail')[0])
-	question = test.question_list[question_number - 1]
-	answers = user_profile.tests[test_name].questions[question]
-	correct_answer = answers[-1]
-	correct_answer_index = test.answer_choices.index(correct_answer)
-	template_vars = {
-		'path': new_path,
-		'question_number': question_number,
-		'test_name': test_name,
-		'question': question,
-		'number_of_choices': test.choices,
-		'answers': answers,
-		'correct_answer_index': correct_answer_index,
-	}
+@teachers_aide.route('/testeditor/<test_name>', methods = ['GET', 'POST'])
+def load_add_questions(test_name):
+	return render_template("Add_questions.html",
+		test_name_url = test_name_url,
+		test_name = test_name,
+		number_of_choices = test.choices,
+		letters = test.answer_choices,
+		questions = test.question_list,
+		number_of_questions = len(test.question_list),
+		)
 
-	with open('Templates/question_detail.html', 'r') as html_file:
-		html = Template(html_file.read()).render(template_vars)
-	self.wfile.write(bytes(html, 'utf8')) 
 
-@teachers_aide.route('/', methods = ['GET', 'POST'])
-def load_add_questions(self, url_info, test_name, user_profile):
-	test = user_profile.tests[test_name]
-	pretty_url_info_last = parse.unquote_plus(url_info[-1])
-	test_name_url = self.path if pretty_url_info_last == test_name else self.path + '/' + test.url_name
-	questions_with_numbers = []
-	for question in test.questions:
-		questions_with_numbers.append(question)
-	number_of_questions = len(questions_with_numbers)
-	path_to_editor = self.path.split('/')
-	path_to_editor.pop()
-	path_to_editor = ('/').join(path_to_editor)
-	template_vars = {
-		'test_name_url': test_name_url,
-		'test_name': test_name,
-		'number_of_choices': test.choices,
-		'letters': test.answer_choices,
-		'questions': test.question_list,
-		'number_of_questions': len(test.question_list),
-		'path': self.path,
-		'path_to_editor': path_to_editor,
-	}
+@teachers_aide.route('/testeditor/<test_name>/question<question_number>', methods = ['GET', 'POST'])
+def load_question_detail(test_name, question_number):
+	return render_template("question_detail.html", 
+		question_number = question_number,
+		test_name = test_name,
+		question = question,
+		number_of_choices = test.choices,
+		answers = answers,
+		correct_answer_index = correct_answer_index,
+	)
 
-	with open('Templates/Add_questions.html', 'r') as html_file:
-		html = Template(html_file.read()).render(template_vars)
-	self.wfile.write(bytes(html, 'utf8'))'''
+ 
+'''
