@@ -15,31 +15,42 @@ profiles = sqlite3.connect('profiles.db')
 profiles.execute('CREATE TABLE IF NOT EXISTS profile_info (USERNAME TEXT, PASSWORD TEXT)')
 
 @teachers_aide.route('/', methods = ['GET', 'POST'])
-def load_login_page():
+def load_login_page(message = ""):
 	if request.method == "POST":
 		return render_template('New_profile.html')
-	return render_template('Login_page.html', message = "testing")
+	return render_template('Login_page.html', message = message)
+
 
 @teachers_aide.route('/newprofile/', methods = ['GET', 'POST'])
 def load_new_profile():
 	return render_template('New_profile.html')
+
 
 @teachers_aide.route('/<username>/testeditor/', methods = ['GET', 'POST'])
 def load_test_editor(username):
 	#Find profile in stored information
 	return render_template('Test_editor.html', current_tests = {})
 
+
 @teachers_aide.route('/login', methods = ['GET', 'POST'])
 def load_logging_in():
+
 	if request.method == 'POST':
 		username = request.form["username"]
-		password = request.form["password"]
-		user_info = profiles.execute("SELECT * FROM profile_info WHERE USERNAME == ?", (username,))
+		password = unicode(request.form["password"])
+		user_info = profiles.execute("SELECT PASSWORD FROM profile_info WHERE USERNAME == ?", (username,)).fetchone()
 		print(user_info)
-		return redirect(url_for("load_test_editor", username = username))
+		print(user_info[0])
+		if user_info[0] == password:
+			return redirect(url_for("load_test_editor", username = username))
+
+		else:
+			return redirect(url_for("load_login_page", message = "That password was incorrect; please try again"))
+
 
 @teachers_aide.route('/new_login', methods = ['GET', 'POST'])
 def load_new_logging_in():
+
 	if request.method == 'POST':
 		username = request.form["username"]
 		password = request.form["password"]
