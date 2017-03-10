@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, escape, url_for
 
+import sqlite3
+
 #from Test_creator import Test
 #from Profile_creator import TeacherProfile
 
@@ -8,6 +10,9 @@ teachers_aide = Flask(__name__)
 #Once working, will need to add cookies, and verification at each step.
 #Add in a redirect to login page if no logged in user
 #Need a way of storing profiles - start with json? Or straight use a database
+
+profiles = sqlite3.connect('profiles.db')
+profiles.execute('CREATE TABLE IF NOT EXISTS profile_info (USERNAME TEXT, PASSWORD TEXT)')
 
 @teachers_aide.route('/', methods = ['GET', 'POST'])
 def load_login_page():
@@ -21,6 +26,7 @@ def load_new_profile():
 
 @teachers_aide.route('/<username>/testeditor/', methods = ['GET', 'POST'])
 def load_test_editor(username):
+	#Find profile in stored information
 	return render_template('Test_editor.html', current_tests = {})
 
 @teachers_aide.route('/login', methods = ['GET', 'POST'])
@@ -28,8 +34,16 @@ def load_logging_in():
 	if request.method == 'POST':
 		username = request.form["username"]
 		password = request.form["password"]
-		#check password if returning
-		#create profile if new
+		user_info = profiles.execute("SELECT * FROM profile_info WHERE USERNAME == ?", (username,))
+		print(user_info)
+		return redirect(url_for("load_test_editor", username = username))
+
+@teachers_aide.route('/new_login', methods = ['GET', 'POST'])
+def load_new_logging_in():
+	if request.method == 'POST':
+		username = request.form["username"]
+		password = request.form["password"]
+		profiles.execute("INSERT INTO profile_info VALUES (?, ?)", (username, password))
 		return redirect(url_for("load_test_editor", username = username))
 
 '''@teachers_aide.route('/<username>/testeditor/new/', methods = ['GET', 'POST'])
