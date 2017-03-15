@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, escape, url_for
+from flask_login import LoginManager
 
 import sqlite3
 
@@ -6,6 +7,8 @@ import sqlite3
 #from Profile_creator import TeacherProfile
 
 teachers_aide = Flask(__name__)
+login_manager = LoginManager()
+login_manager.init_app(teachers_aide)
 
 #Once working, will need to add cookies, and verification at each step.
 #Add in a redirect to login page if no logged in user
@@ -15,10 +18,8 @@ profiles = sqlite3.connect('profiles.db')
 profiles.execute('CREATE TABLE IF NOT EXISTS profile_info (USERNAME TEXT, PASSWORD TEXT)')
 
 @teachers_aide.route('/', methods = ['GET', 'POST'])
-def load_login_page(message = ""):
-	if request.method == "POST":
-		return render_template('New_profile.html')
-	return render_template('Login_page.html', message = message)
+def load_login_page():
+	return render_template('Login_page.html', message = "")
 
 
 @teachers_aide.route('/newprofile/', methods = ['GET', 'POST'])
@@ -39,22 +40,23 @@ def load_logging_in():
 		username = request.form["username"]
 		password = unicode(request.form["password"])
 		user_info = profiles.execute("SELECT PASSWORD FROM profile_info WHERE USERNAME == ?", (username,)).fetchone()
-		print(user_info)
-		print(user_info[0])
+
 		if user_info[0] == password:
 			return redirect(url_for("load_test_editor", username = username))
 
 		else:
-			return redirect(url_for("load_login_page", message = "That password was incorrect; please try again"))
+			return redirect(url_for("load_login_page"))
 
 
 @teachers_aide.route('/new_login', methods = ['GET', 'POST'])
 def load_new_logging_in():
 
 	if request.method == 'POST':
+		#need to check if username already exists
 		username = request.form["username"]
 		password = request.form["password"]
 		profiles.execute("INSERT INTO profile_info VALUES (?, ?)", (username, password))
+		profiles.commit()
 		return redirect(url_for("load_test_editor", username = username))
 
 '''@teachers_aide.route('/<username>/testeditor/new/', methods = ['GET', 'POST'])
@@ -86,3 +88,6 @@ def load_question_detail(test_name, question_number):
 
  
 '''
+
+
+
